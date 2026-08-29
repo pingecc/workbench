@@ -7,6 +7,14 @@
 
 > 当前版本：v0.1.0（macOS）· M1 一期完成，处于日常自用阶段。
 
+## 📸 界面预览
+
+![脚本管理：集中登记、分组、一键执行](screenshots/scripts.png)
+
+![实时日志：流式滚动、自动滚底、历史最近 5 次](screenshots/log-panel.png)
+
+![项目仓库管理：扫描登记、技术栈识别、按语言自动选 IDE](screenshots/projects.png)
+
 ## ✨ 功能
 
 **脚本模块**
