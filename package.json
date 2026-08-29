@@ -12,8 +12,7 @@
     "build": "electron-vite build",
     "start": "electron-vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json",
-    "rebuild": "electron-rebuild -f -w better-sqlite3",
-    "postinstall": "electron-rebuild -f -w better-sqlite3",
+    "postinstall": "electron-builder install-app-deps",
     "pack:mac": "electron-vite build && electron-builder --mac --dir",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\""
   },
@@ -24,7 +23,6 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@electron/rebuild": "^3.7.0",
     "@types/better-sqlite3": "^7.6.11",
     "@types/iconv-lite": "^0.0.1",
     "@types/node": "^20.14.0",
