@@ -1,11 +1,12 @@
 import { ipcMain } from 'electron'
 import { runScript, stopScript } from './executor'
 import { exportBackup, importBackup } from './services/backup'
+import * as notes from './services/notes'
 import * as projects from './services/projects'
 import * as scripts from './services/scripts'
 import { getSettings, updateSettings } from './services/settings'
 import { copyPath, openEditor, openFolder, openTerminal, pickDirectory, pickFile } from './services/system'
-import type { ProjectInput, ScriptInput } from '../shared/types'
+import type { NoteInput, ProjectInput, ScriptInput } from '../shared/types'
 
 export function registerIpc(): void {
   ipcMain.handle('scripts:list', () => scripts.listScripts())
@@ -57,6 +58,13 @@ export function registerIpc(): void {
     return openEditor(path, techStack ?? [])
   })
   ipcMain.handle('project:copy', (_e, path: string) => copyPath(path))
+
+  ipcMain.handle('notes:list', () => notes.listNotes())
+  ipcMain.handle('note:create', (_e, input: NoteInput) => notes.createNote(input))
+  ipcMain.handle('note:update', (_e, id: number, patch: Partial<NoteInput> & { done?: boolean }) =>
+    notes.updateNote(id, patch)
+  )
+  ipcMain.handle('note:delete', (_e, id: number) => notes.deleteNote(id))
 
   ipcMain.handle('settings:get', () => getSettings())
   ipcMain.handle('settings:update', (_e, patch: Parameters<typeof updateSettings>[0]) => updateSettings(patch))

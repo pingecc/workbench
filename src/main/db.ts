@@ -87,6 +87,27 @@ function migrate(db: Database.Database): void {
     }
     db.pragma('user_version = 2')
   }
+
+  if (version < 3) {
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS notes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        type TEXT NOT NULL DEFAULT 'idea',
+        title TEXT NOT NULL,
+        body TEXT NOT NULL DEFAULT '',
+        done INTEGER NOT NULL DEFAULT 0,
+        due_date TEXT,
+        priority TEXT NOT NULL DEFAULT 'mid',
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        completed_at TEXT
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_notes_type ON notes(type);
+      CREATE INDEX IF NOT EXISTS idx_notes_done ON notes(done);
+    `)
+    db.pragma('user_version = 3')
+  }
 }
 
 export function nowIso(): string {

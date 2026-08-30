@@ -2,11 +2,12 @@ import { useCallback, useEffect, useState } from 'react'
 import type { Settings, ThemeMode } from '../../shared/types'
 import { api } from './api'
 import ProjectsPage from './pages/ProjectsPage'
+import NotesPage from './pages/NotesPage'
 import ScriptsPage from './pages/ScriptsPage'
 import SettingsPage from './pages/SettingsPage'
 import { handleLog, handleStatus } from './streamStore'
 
-type Tab = 'scripts' | 'projects' | 'settings'
+type Tab = 'scripts' | 'projects' | 'notes' | 'settings'
 
 function resolveTheme(mode: ThemeMode, osDark: boolean): 'light' | 'dark' {
   if (mode === 'light' || mode === 'dark') return mode
@@ -20,6 +21,7 @@ export default function App(): JSX.Element {
   const [osDark, setOsDark] = useState(() => window.matchMedia('(prefers-color-scheme: dark)').matches)
   const [scriptCount, setScriptCount] = useState(0)
   const [projectCount, setProjectCount] = useState(0)
+  const [noteCount, setNoteCount] = useState(0)
 
   const loadSettings = useCallback(() => {
     void api.getSettings().then(setSettings)
@@ -36,6 +38,7 @@ export default function App(): JSX.Element {
     window.addEventListener('settings-updated', onSettingsUpdated)
     void api.listScripts().then((s) => setScriptCount(s.length))
     void api.listProjects().then((p) => setProjectCount(p.length))
+    void api.listNotes().then((n) => setNoteCount(n.length))
     return () => {
       offLog()
       offStatus()
@@ -84,6 +87,11 @@ export default function App(): JSX.Element {
             <span>项目</span>
             <span className="nav-count">{projectCount}</span>
           </button>
+          <button className={`nav-item ${tab === 'notes' ? 'active' : ''}`} onClick={() => setTab('notes')}>
+            <span className="nav-ic">📝</span>
+            <span>备忘</span>
+            <span className="nav-count">{noteCount}</span>
+          </button>
           <button className={`nav-item ${tab === 'settings' ? 'active' : ''}`} onClick={() => setTab('settings')}>
             <span className="nav-ic">⚙️</span>
             <span>设置</span>
@@ -100,6 +108,7 @@ export default function App(): JSX.Element {
         <div className="content">
           {tab === 'scripts' && <ScriptsPage settings={settings} notify={notify} />}
           {tab === 'projects' && <ProjectsPage settings={settings} notify={notify} />}
+          {tab === 'notes' && <NotesPage notify={notify} onCountChange={setNoteCount} />}
           {tab === 'settings' && <SettingsPage settings={settings} onSaved={setSettings} notify={notify} />}
         </div>
       </main>

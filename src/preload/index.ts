@@ -2,6 +2,8 @@ import { contextBridge, ipcRenderer, type IpcRendererEvent } from 'electron'
 import type {
   BackupSummary,
   GitInfo,
+  Note,
+  NoteInput,
   Project,
   ProjectInput,
   RunRecord,
@@ -49,6 +51,12 @@ const api = {
   openProject: (path: string, kind: 'folder' | 'terminal' | 'editor', techStack?: string[]): Promise<string> =>
     ipcRenderer.invoke('project:open', path, kind, techStack),
   copyProjectPath: (path: string): Promise<void> => ipcRenderer.invoke('project:copy', path),
+
+  listNotes: (): Promise<Note[]> => ipcRenderer.invoke('notes:list'),
+  createNote: (input: NoteInput): Promise<Note> => ipcRenderer.invoke('note:create', input),
+  updateNote: (id: number, patch: Partial<NoteInput> & { done?: boolean }): Promise<Note> =>
+    ipcRenderer.invoke('note:update', id, patch),
+  deleteNote: (id: number): Promise<void> => ipcRenderer.invoke('note:delete', id),
 
   getSettings: (): Promise<Settings> => ipcRenderer.invoke('settings:get'),
   updateSettings: (patch: Partial<Settings>): Promise<Settings> => ipcRenderer.invoke('settings:update', patch),

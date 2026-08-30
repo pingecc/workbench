@@ -107,6 +107,30 @@ export interface Settings {
   projectView: ViewMode
 }
 
+export type NoteType = 'todo' | 'idea'
+export type NotePriority = 'high' | 'mid' | 'low'
+
+export interface Note {
+  id: number
+  type: NoteType
+  title: string
+  body: string
+  done: boolean
+  dueDate: string | null
+  priority: NotePriority
+  createdAt: string
+  updatedAt: string
+  completedAt: string | null
+}
+
+export interface NoteInput {
+  type: NoteType
+  title: string
+  body?: string
+  dueDate?: string | null
+  priority?: NotePriority
+}
+
 export interface ScriptStatusEvent {
   runId: number
   scriptId: number
@@ -127,5 +151,6 @@ export interface BackupSummary {
   scripts: number
   projects: number
   runs: number
+  notes: number
   preBackupPath?: string
 }

@@ -11,6 +11,7 @@ interface BackupPayload {
   groups: unknown[]
   scripts: unknown[]
   projects: unknown[]
+  notes: unknown[]
   settings: unknown[]
   runHistory: unknown[]
 }
@@ -24,6 +25,7 @@ function collect(): BackupPayload {
     groups: db.prepare('SELECT * FROM groups').all(),
     scripts: db.prepare('SELECT * FROM scripts').all(),
     projects: db.prepare('SELECT * FROM projects').all(),
+    notes: db.prepare('SELECT * FROM notes').all(),
     settings: db.prepare('SELECT * FROM settings').all(),
     runHistory: db.prepare('SELECT * FROM run_history').all()
   }
@@ -45,7 +47,8 @@ export async function exportBackup(): Promise<BackupSummary | null> {
     groups: payload.groups.length,
     scripts: payload.scripts.length,
     projects: payload.projects.length,
-    runs: payload.runHistory.length
+    runs: payload.runHistory.length,
+    notes: payload.notes.length
   }
 }
 
@@ -73,12 +76,14 @@ export async function importBackup(): Promise<BackupSummary | null> {
   mkdirSync(backupDir, { recursive: true })
   const prePath = join(backupDir, `pre-import-${nowIso().slice(0, 19).replace(/[:T]/g, '-')}.json`)
   writeFileSync(prePath, JSON.stringify(collect(), null, 2), 'utf8')
+  const noteRows = Array.isArray(payload.notes) ? (payload.notes as Array<Record<string, unknown>>) : []
 
   db.transaction(() => {
     db.prepare('DELETE FROM run_history').run()
     db.prepare('DELETE FROM scripts').run()
     db.prepare('DELETE FROM groups').run()
     db.prepare('DELETE FROM projects').run()
+    db.prepare('DELETE FROM notes').run()
     db.prepare('DELETE FROM settings').run()
 
     const insert = db.prepare(
@@ -139,6 +144,25 @@ export async function importBackup(): Promise<BackupSummary | null> {
       })
     }
 
+    const insertNote = db.prepare(
+      `INSERT INTO notes (id, type, title, body, done, due_date, priority, created_at, updated_at, completed_at)
+       VALUES (@id, @type, @title, @body, @done, @due_date, @priority, @created_at, @updated_at, @completed_at)`
+    )
+    for (const row of noteRows) {
+      insertNote.run({
+        id: row.id,
+        type: row.type ?? 'idea',
+        title: row.title ?? '',
+        body: row.body ?? '',
+        done: row.done ?? 0,
+        due_date: row.due_date ?? null,
+        priority: row.priority ?? 'mid',
+        created_at: row.created_at ?? nowIso(),
+        updated_at: row.updated_at ?? nowIso(),
+        completed_at: row.completed_at ?? null
+      })
+    }
+
     const insertSetting = db.prepare('INSERT INTO settings (key, value) VALUES (?, ?)')
     for (const row of payload.settings as Array<{ key?: string; value?: string }>) {
       if (row.key && row.value) insertSetting.run(row.key, row.value)
@@ -169,6 +193,7 @@ export async function importBackup(): Promise<BackupSummary | null> {
     scripts: payload.scripts.length,
     projects: payload.projects.length,
     runs: payload.runHistory.length,
+    notes: noteRows.length,
     preBackupPath: prePath
   }
 }

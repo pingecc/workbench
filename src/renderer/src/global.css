@@ -1038,3 +1038,238 @@ textarea {
   background: var(--text-3);
   background-clip: content-box;
 }
+
+/* ---------- 备忘模块 ---------- */
+.search-wrap {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.search-ic {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  color: var(--text-3);
+  pointer-events: none;
+}
+
+.search-wrap input {
+  padding-left: 32px;
+}
+
+.note-panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-head .sec-title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.sec-count {
+  font-size: 11.5px;
+  color: var(--text-3);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 1px 8px;
+}
+
+.collapse-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 16px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  justify-content: flex-start;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.collapse-btn:hover {
+  background: var(--bg-subtle);
+}
+
+.chev {
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+
+.chev.open {
+  transform: rotate(180deg);
+}
+
+.note-list.collapsed {
+  display: none;
+}
+
+.note-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.12s ease;
+}
+
+.note-row:last-child {
+  border-bottom: none;
+}
+
+.note-row:hover {
+  background: var(--bg-subtle);
+}
+
+.note-ic {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  border-radius: 10px;
+  background: var(--warning-soft);
+  border: 1px solid color-mix(in srgb, var(--warning) 30%, var(--border));
+}
+
+.note-check {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.note-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.note-title {
+  font-size: 13.5px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.note-excerpt {
+  font-size: 12px;
+  color: var(--text-3);
+  margin-top: 1px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.note-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+.pri-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 8px;
+  border-radius: 20px;
+}
+
+.pri-high {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.pri-mid {
+  color: var(--warning);
+  background: var(--warning-soft);
+}
+
+.pri-low {
+  color: var(--success);
+  background: var(--success-soft);
+}
+
+.due-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--text-2);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  padding: 1px 8px;
+  border-radius: 20px;
+}
+
+.due-badge.overdue {
+  color: var(--danger);
+  background: var(--danger-soft);
+  border-color: color-mix(in srgb, var(--danger) 30%, var(--border));
+}
+
+.note-row.done .note-title {
+  color: var(--text-3);
+  text-decoration: line-through;
+}
+
+.note-row.done .note-excerpt {
+  color: var(--text-3);
+  opacity: 0.7;
+}
+
+.row-actions {
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.note-row:hover .row-actions {
+  opacity: 1;
+}
+
+.type-seg {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.type-seg button {
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--bg-subtle);
+  border-color: var(--border);
+  color: var(--text-2);
+}
+
+.type-seg button.active {
+  background: var(--accent-soft);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  color: var(--accent);
+  font-weight: 600;
+}
