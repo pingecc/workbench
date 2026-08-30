@@ -16,6 +16,11 @@ const PRIORITY_LABEL: Record<NotePriority, string> = {
   low: '低优先级'
 }
 
+const PRIORITY_RANK: Record<NotePriority, number> = { high: 0, mid: 1, low: 2 }
+
+const byPriorityThenCreated = (a: Note, b: Note): number =>
+  PRIORITY_RANK[a.priority] - PRIORITY_RANK[b.priority] || b.createdAt.localeCompare(a.createdAt)
+
 const EMPTY_FORM: NoteInput = {
   type: 'todo',
   title: '',
@@ -57,9 +62,11 @@ export default function NotesPage({ notify, onCountChange }: NotesPageProps): JS
 
   const q = search.trim().toLowerCase()
   const match = (n: Note): boolean => !q || `${n.title} ${n.body}`.toLowerCase().includes(q)
-  const pendingTodos = notes.filter((n) => n.type === 'todo' && !n.done && match(n))
-  const doneTodos = notes.filter((n) => n.type === 'todo' && n.done && match(n))
-  const ideas = notes.filter((n) => n.type === 'idea' && match(n))
+  const pendingTodos = notes.filter((n) => n.type === 'todo' && !n.done && match(n)).sort(byPriorityThenCreated)
+  const doneTodos = notes.filter((n) => n.type === 'todo' && n.done && match(n)).sort(byPriorityThenCreated)
+  const ideas = notes
+    .filter((n) => n.type === 'idea' && match(n))
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
 
   const showTodo = filter !== 'idea'
   const showIdea = filter !== 'todo'
