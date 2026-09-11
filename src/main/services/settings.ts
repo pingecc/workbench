@@ -9,7 +9,9 @@ export const DEFAULT_SETTINGS: Settings = {
   terminalApp: 'Terminal',
   theme: 'system',
   scriptView: 'card',
-  projectView: 'card'
+  projectView: 'card',
+  skillView: 'card',
+  skillScanRoots: [join(homedir(), '.zcode/skills')]
 }
 
 export function getSettings(): Settings {

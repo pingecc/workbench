@@ -4,6 +4,7 @@ import { exportBackup, importBackup } from './services/backup'
 import * as notes from './services/notes'
 import * as projects from './services/projects'
 import * as scripts from './services/scripts'
+import * as skills from './services/skills'
 import { getSettings, updateSettings } from './services/settings'
 import { copyPath, openEditor, openFolder, openTerminal, pickDirectory, pickFile } from './services/system'
 import type { NoteInput, ProjectInput, ScriptInput } from '../shared/types'
@@ -65,6 +66,21 @@ export function registerIpc(): void {
     notes.updateNote(id, patch)
   )
   ipcMain.handle('note:delete', (_e, id: number) => notes.deleteNote(id))
+
+  ipcMain.handle('skills:list', () => skills.listSkills())
+  ipcMain.handle('skills:scan', (_e, root: string) => skills.scanSkillRoot(root))
+  ipcMain.handle('skills:addFromScan', (_e, paths: string[], sourceRoot: string) =>
+    skills.addSkillsFromScan(paths, sourceRoot)
+  )
+  ipcMain.handle('skill:delete', (_e, id: number) => skills.deleteSkill(id))
+  ipcMain.handle('skills:clearMissing', () => skills.clearMissingSkills())
+  ipcMain.handle('skill:open', (_e, path: string, kind: 'folder' | 'editor') => {
+    if (kind === 'folder') {
+      openFolder(path)
+      return '文件夹'
+    }
+    return openEditor(path, [])
+  })
 
   ipcMain.handle('settings:get', () => getSettings())
   ipcMain.handle('settings:update', (_e, patch: Parameters<typeof updateSettings>[0]) => updateSettings(patch))

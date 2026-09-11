@@ -13,7 +13,9 @@ import type {
   ScriptInput,
   ScriptLogEvent,
   ScriptStatusEvent,
-  Settings
+  Settings,
+  Skill,
+  SkillScanCandidate
 } from '../shared/types'
 
 const api = {
@@ -57,6 +59,15 @@ const api = {
   updateNote: (id: number, patch: Partial<NoteInput> & { done?: boolean }): Promise<Note> =>
     ipcRenderer.invoke('note:update', id, patch),
   deleteNote: (id: number): Promise<void> => ipcRenderer.invoke('note:delete', id),
+
+  listSkills: (): Promise<Skill[]> => ipcRenderer.invoke('skills:list'),
+  scanSkills: (root: string): Promise<SkillScanCandidate[]> => ipcRenderer.invoke('skills:scan', root),
+  addSkillsFromScan: (paths: string[], sourceRoot: string): Promise<{ added: number; updated: number }> =>
+    ipcRenderer.invoke('skills:addFromScan', paths, sourceRoot),
+  deleteSkill: (id: number): Promise<void> => ipcRenderer.invoke('skill:delete', id),
+  clearMissingSkills: (): Promise<number> => ipcRenderer.invoke('skills:clearMissing'),
+  openSkill: (path: string, kind: 'folder' | 'editor'): Promise<string> =>
+    ipcRenderer.invoke('skill:open', path, kind),
 
   getSettings: (): Promise<Settings> => ipcRenderer.invoke('settings:get'),
   updateSettings: (patch: Partial<Settings>): Promise<Settings> => ipcRenderer.invoke('settings:update', patch),

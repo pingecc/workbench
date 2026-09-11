@@ -105,6 +105,27 @@ export interface Settings {
   theme: ThemeMode
   scriptView: ViewMode
   projectView: ViewMode
+  skillView: ViewMode
+  skillScanRoots: string[]
+}
+
+export interface Skill {
+  id: number
+  name: string
+  description: string
+  path: string
+  sourceRoot: string
+  userLevel: boolean
+  missing: boolean
+  createdAt: string
+  lastSeenAt: string
+}
+
+export interface SkillScanCandidate {
+  path: string
+  name: string
+  description: string
+  registered: boolean
 }
 
 export type NoteType = 'todo' | 'idea'
@@ -152,5 +173,6 @@ export interface BackupSummary {
   projects: number
   runs: number
   notes: number
+  skills: number
   preBackupPath?: string
 }

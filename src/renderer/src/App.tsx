@@ -6,8 +6,9 @@ import NotesPage from './pages/NotesPage'
 import ScriptsPage from './pages/ScriptsPage'
 import SettingsPage from './pages/SettingsPage'
 import { handleLog, handleStatus } from './streamStore'
+import SkillsPage from './pages/SkillsPage'
 
-type Tab = 'scripts' | 'projects' | 'notes' | 'settings'
+type Tab = 'scripts' | 'projects' | 'notes' | 'skills' | 'settings'
 
 function resolveTheme(mode: ThemeMode, osDark: boolean): 'light' | 'dark' {
   if (mode === 'light' || mode === 'dark') return mode
@@ -22,6 +23,7 @@ export default function App(): JSX.Element {
   const [scriptCount, setScriptCount] = useState(0)
   const [projectCount, setProjectCount] = useState(0)
   const [noteCount, setNoteCount] = useState(0)
+  const [skillCount, setSkillCount] = useState(0)
 
   const loadSettings = useCallback(() => {
     void api.getSettings().then(setSettings)
@@ -39,6 +41,7 @@ export default function App(): JSX.Element {
     void api.listScripts().then((s) => setScriptCount(s.length))
     void api.listProjects().then((p) => setProjectCount(p.length))
     void api.listNotes().then((n) => setNoteCount(n.length))
+    void api.listSkills().then((s) => setSkillCount(s.length))
     return () => {
       offLog()
       offStatus()
@@ -92,6 +95,11 @@ export default function App(): JSX.Element {
             <span>备忘</span>
             <span className="nav-count">{noteCount}</span>
           </button>
+          <button className={`nav-item ${tab === 'skills' ? 'active' : ''}`} onClick={() => setTab('skills')}>
+            <span className="nav-ic">✨</span>
+            <span>技能</span>
+            <span className="nav-count">{skillCount}</span>
+          </button>
           <button className={`nav-item ${tab === 'settings' ? 'active' : ''}`} onClick={() => setTab('settings')}>
             <span className="nav-ic">⚙️</span>
             <span>设置</span>
@@ -101,7 +109,7 @@ export default function App(): JSX.Element {
           <button className="theme-toggle" onClick={toggleTheme}>
             {theme === 'dark' ? '🌙 切换到浅色' : '☀️ 切换到深色'}
           </button>
-          <div className="version">v0.1.0 · M1</div>
+          <div className="version">v0.3.0 · M5</div>
         </div>
       </aside>
       <main className="main">
@@ -109,6 +117,7 @@ export default function App(): JSX.Element {
           {tab === 'scripts' && <ScriptsPage settings={settings} notify={notify} />}
           {tab === 'projects' && <ProjectsPage settings={settings} notify={notify} />}
           {tab === 'notes' && <NotesPage notify={notify} onCountChange={setNoteCount} />}
+          {tab === 'skills' && <SkillsPage settings={settings} notify={notify} onCountChange={setSkillCount} />}
           {tab === 'settings' && <SettingsPage settings={settings} onSaved={setSettings} notify={notify} />}
         </div>
       </main>

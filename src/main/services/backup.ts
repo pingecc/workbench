@@ -12,6 +12,7 @@ interface BackupPayload {
   scripts: unknown[]
   projects: unknown[]
   notes: unknown[]
+  skills: unknown[]
   settings: unknown[]
   runHistory: unknown[]
 }
@@ -26,6 +27,7 @@ function collect(): BackupPayload {
     scripts: db.prepare('SELECT * FROM scripts').all(),
     projects: db.prepare('SELECT * FROM projects').all(),
     notes: db.prepare('SELECT * FROM notes').all(),
+    skills: db.prepare('SELECT * FROM skills').all(),
     settings: db.prepare('SELECT * FROM settings').all(),
     runHistory: db.prepare('SELECT * FROM run_history').all()
   }
@@ -48,7 +50,8 @@ export async function exportBackup(): Promise<BackupSummary | null> {
     scripts: payload.scripts.length,
     projects: payload.projects.length,
     runs: payload.runHistory.length,
-    notes: payload.notes.length
+    notes: payload.notes.length,
+    skills: payload.skills.length
   }
 }
 
@@ -77,6 +80,7 @@ export async function importBackup(): Promise<BackupSummary | null> {
   const prePath = join(backupDir, `pre-import-${nowIso().slice(0, 19).replace(/[:T]/g, '-')}.json`)
   writeFileSync(prePath, JSON.stringify(collect(), null, 2), 'utf8')
   const noteRows = Array.isArray(payload.notes) ? (payload.notes as Array<Record<string, unknown>>) : []
+  const skillRows = Array.isArray(payload.skills) ? (payload.skills as Array<Record<string, unknown>>) : []
 
   db.transaction(() => {
     db.prepare('DELETE FROM run_history').run()
@@ -84,6 +88,7 @@ export async function importBackup(): Promise<BackupSummary | null> {
     db.prepare('DELETE FROM groups').run()
     db.prepare('DELETE FROM projects').run()
     db.prepare('DELETE FROM notes').run()
+    db.prepare('DELETE FROM skills').run()
     db.prepare('DELETE FROM settings').run()
 
     const insert = db.prepare(
@@ -163,6 +168,23 @@ export async function importBackup(): Promise<BackupSummary | null> {
       })
     }
 
+    const insertSkill = db.prepare(
+      `INSERT INTO skills (id, name, description, path, source_root, missing, created_at, last_seen_at)
+       VALUES (@id, @name, @description, @path, @source_root, @missing, @created_at, @last_seen_at)`
+    )
+    for (const row of skillRows) {
+      insertSkill.run({
+        id: row.id,
+        name: row.name ?? '',
+        description: row.description ?? '',
+        path: row.path ?? '',
+        source_root: row.source_root ?? '',
+        missing: row.missing ?? 0,
+        created_at: row.created_at ?? nowIso(),
+        last_seen_at: row.last_seen_at ?? nowIso()
+      })
+    }
+
     const insertSetting = db.prepare('INSERT INTO settings (key, value) VALUES (?, ?)')
     for (const row of payload.settings as Array<{ key?: string; value?: string }>) {
       if (row.key && row.value) insertSetting.run(row.key, row.value)
@@ -194,6 +216,7 @@ export async function importBackup(): Promise<BackupSummary | null> {
     projects: payload.projects.length,
     runs: payload.runHistory.length,
     notes: noteRows.length,
+    skills: skillRows.length,
     preBackupPath: prePath
   }
 }

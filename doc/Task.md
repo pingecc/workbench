@@ -1,6 +1,6 @@
 # Task · 任务拆分
 
-> 状态：M1 已完成（2026-08-29）；备忘模块（M4）已完成（2026-08-30） · 估时为个人开发节奏「天」
+> 状态：M1 已完成（2026-08-29）；备忘模块（M4）已完成（2026-08-30）；技能管理（M5）进行中（2026-09-11） · 估时为个人开发节奏「天」
 
 | 编号 | 任务 | 说明 | 依赖 | 估时 | 状态 |
 | --- | --- | --- | --- | --- | --- |
@@ -22,9 +22,14 @@
 | T16 | 备忘主进程 | notes service 增删改查与排序；IPC + preload | T15 | 0.5d | 已完成 |
 | T17 | 备忘渲染层 | NotesPage（分区列表/搜索/筛选/勾选/弹窗）+ 侧边栏页签 + 样式 | T16 | 1d | 已完成 |
 | T18 | 备忘文档与验证 | PRD/Plan/Task/Test/README 更新、History 记录、typecheck/eslint/build | T17 | 0.3d | 已完成 |
+| T19 | 技能数据层与主进程 | `skills` 表（v4 迁移）；skills service：SKILL.md frontmatter 解析、扫描发现、勾选登记、废纸篓删除、失效标记与清理 | T2 | 0.5d | 已完成 |
+| T20 | 技能 IPC 与 preload | skills:list/scan/addFromScan、skill:delete/clearMissing/open | T19 | 0.2d | 已完成 |
+| T21 | 技能渲染层 | SkillsPage（卡片/列表/搜索/扫描弹窗/删除确认/失效清理）+ 侧边栏页签 + 样式 | T20 | 1d | 已完成 |
+| T22 | 技能备份与文档 | 备份导出/导入纳入 skills；PRD/Task/Test/README 更新、History 记录、质量门 | T21 | 0.3d | 已完成 |
 
 质量门（2026-08-29）：`npm run typecheck`、`eslint`、`npm run build` 全部通过；预览模式与打包 `.app` 启动冒烟通过。
 质量门（2026-08-30）：备忘模块 `npm run typecheck`、`npx eslint src --max-warnings 0`、`npm run build` 全部通过。
+质量门（2026-09-11）：技能模块 `npm run typecheck`、`npx eslint src --max-warnings 0`、`npm run build` 全部通过；服务层冒烟测试（隔离 userData）14 项断言全部通过。
 
 ## 二期候选（M2，不排期）
 

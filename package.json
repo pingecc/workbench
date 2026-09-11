@@ -1,6 +1,6 @@
 {
   "name": "workbench",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Workbench 桌面工作台：脚本管理与项目仓库管理",
   "productName": "Workbench",
   "main": "out/main/index.js",

@@ -108,6 +108,36 @@ function migrate(db: Database.Database): void {
     `)
     db.pragma('user_version = 3')
   }
+
+  if (version < 5) {
+    ensureSkillsSchema(db)
+    db.pragma('user_version = 5')
+  }
+}
+
+/** 确保 skills 表为当前结构：存在旧结构表时改名保留后重建（磁盘才是事实源，登记表可安全重建） */
+function ensureSkillsSchema(db: Database.Database): void {
+  const cols = db.prepare('PRAGMA table_info(skills)').all() as Array<{ name: string }>
+  if (cols.length > 0 && !cols.some((c) => c.name === 'source_root')) {
+    let target = 'skills_legacy_v0'
+    const taken = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = ?").get(target)
+    if (taken) target = `skills_legacy_${Date.now()}`
+    db.exec(`ALTER TABLE skills RENAME TO ${target}`)
+  }
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS skills (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      description TEXT NOT NULL DEFAULT '',
+      path TEXT NOT NULL UNIQUE,
+      source_root TEXT NOT NULL DEFAULT '',
+      missing INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL,
+      last_seen_at TEXT NOT NULL
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_skills_missing ON skills(missing);
+  `)
 }
 
 export function nowIso(): string {
